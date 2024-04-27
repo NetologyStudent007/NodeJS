@@ -42,7 +42,7 @@ const qustion = (secret, prompt) => {
       qustion(secret, `Неверный формат. Поробуйте снова: `)
     } else {
       const isWin = userVariant == secret;
-      console.log(`${secret == 1 ? headText : tailText}${isWin ? '! :)' : ':('}`);
+      console.log(`${secret == 1 ? headText : tailText}${isWin ? '! :)' : ' :('}`);
       try {
         await appendFile(join(logpath, filename), `${JSON.stringify({ date: new Date(), isWin })}\r\n`);
       } catch {
