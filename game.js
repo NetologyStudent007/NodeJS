@@ -38,11 +38,11 @@ const qustion = (secret, prompt) => {
 
     const userVariant = +answer;
 
-    if (answer == '' || isNaN(userVariant) || userVariant > 1) {
+    if (!answer || isNaN(userVariant) || userVariant > 2 || userVariant < 1) {
       qustion(secret, `Неверный формат. Поробуйте снова: `)
     } else {
       const isWin = userVariant == secret;
-      console.log(secret ? `${headText}! :)` : `${tailText} :(`);
+      console.log(`${secret == 1 ? headText : tailText}${isWin ? '! :)' : ':('}`);
       try {
         await appendFile(join(logpath, filename), `${JSON.stringify({ date: new Date(), isWin })}\r\n`);
       } catch {
@@ -65,7 +65,7 @@ const playAgain = () => {
 }
 
 const startGame = () => {
-  qustion(Math.random() > 0.5, `${headText}(1)/${tailText}(0) ?: `);
+  qustion((Math.random() > 0.5) ? 1 : 2, `${headText}(1)/${tailText}(2) ?: `);
 }
 
 (async () => {
