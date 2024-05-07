@@ -25,10 +25,10 @@ http.get(`http://api.weatherapi.com/v1/current.json?key=${config.APIKey}&q=${arg
   res.setEncoding('utf8');
   let rawData = '';
   res.on('data', (chunk) => { rawData += chunk; });
-  res.on('end', () => {    
+  res.on('end', () => {
     try {
       const parsedData = JSON.parse(rawData);
-      const { statusCode} = res;
+      const { statusCode } = res;
       if (statusCode !== 200) {
         console.error(`Error: ${parsedData.error.message}`);
         return;
