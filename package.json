@@ -1,18 +1,18 @@
 {
-  "name": "004-stream",
+  "name": "005-http",
   "version": "1.0.0",
   "description": "",
-  "main": "game.js",
+  "main": "wf.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "headsandtails": "./game.js",
-    "loganalyzer": "./loganalyzer.js"
+    "wf": "./wf.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^16.4.5",
     "yargs": "^17.7.2"
   }
 }
