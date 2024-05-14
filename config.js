@@ -1,4 +1,3 @@
-module.exports = {
-    APIKey: process.env.APIKey
-    //APIKey: '5134413bfa294317a3795958240705'
+export default {
+    PORT: process.env.PORT || 3000
 }
