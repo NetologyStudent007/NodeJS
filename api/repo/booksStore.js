@@ -1,37 +1,40 @@
 import Book from "../models/book.js";
 
 export default class BooksStore {
-    books = [];
+    books = new Map();
+    filesStore = new Map();
 
     addBook = ({
         title,
         description,
         authors,
         favorite,
-        fileCover,
-        fileName
+        bookFile
     }) => {
 
         const newBook = new Book(title,
             description,
             authors,
-            favorite,
-            fileCover,
-            fileName);
+            favorite);
 
-        this.books.push(newBook);
+        this.books.set(newBook.id, newBook);
+        this.filesStore.set(newBook.id, bookFile);
 
         return newBook;
     }
 
-    getBooks = () => this.books;
+    getBooks = () => [...this.books.values()];
 
-    getBook = (id) => this.books.find(f => f.id == id);
+    getBook = (id) => this.books.get(id);
+
+    getBookFile = (id) => this.filesStore.get(id);
 
     deleteBook = (id) => {
-        const idx = this.books.findIndex(f => f.id === id);
-        if (idx !== -1) {
-            return this.books.splice(idx, 1)[0];
+        const book = this.books.get(id);
+        if (book) {
+            this.filesStore.delete(book.id);
+            this.books.delete(book.id);
+            return book;
         }
         return undefined;
     }
@@ -42,23 +45,22 @@ export default class BooksStore {
         description,
         authors,
         favorite,
-        fileCover,
-        fileName
+        bookFile
     }) => {
-        const idx = this.books.findIndex(f => f.id == id);
-        if (idx == -1) {
+        const book = this.books.get(id);
+        if (!book) {
             return undefined;
         } else {
-            this.books[idx] = {
+            const updated = {
                 id,
                 title,
                 description,
                 authors,
-                favorite,
-                fileCover,
-                fileName
+                favorite
             }
-            return this.books[idx];
+            this.books.set(id, updated);
+            this.filesStore.set(id, bookFile);
+            return updated;
         }
     }
 }
