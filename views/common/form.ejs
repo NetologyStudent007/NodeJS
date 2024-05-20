@@ -1,0 +1,44 @@
+<% if(isEdit) { %>
+<form class="form" method="post" enctype="multipart/form-data" action="/books/book/<%= book.id ? 'update' : 'create' %>">
+<% } else { %>
+<form class="form">
+<% } %>
+    <% if(error) { %>
+        <div class="error"><%= error %></div>
+    <% } %>
+    <input name="id" type="hidden" value="<%= book.id %>"/>
+    <fieldset <%= !isEdit ? 'disabled' : '' %>>
+        <div>
+            <label for="title">Название</label>
+            <input type="text" value="<%= book.title %>" name="title" id="title">
+        </div>
+        <div>
+            <label for="authors">Автор</label>
+            <input type="text" value="<%= book.authors %>" name="authors" id="authors">
+        </div>
+        <div>
+            <label for="description">Автор</label>
+            <textarea type="text" rows="5" name="description" id="description"><%= book.description %></textarea>
+        </div>
+        <% if(isEdit) { %>
+            <div>
+                <label for="file">Файл</label>
+                <input type="file" name="file" id="file" onchange="((el) => document.getElementById('filename').value = el.value.split('\\').pop())(this)">
+                <input type="text" id="filename" placeholder="Выбрать файл" onclick="(() => document.getElementById('file').click())()"/>
+            </div>
+        <% } else { %>
+            <a target="_blank" href="/books/book/<%= book.id %>/download">Скачать</a>
+        <% } %>        
+    </fieldset>
+    <div class="form__buttons">
+        <% if(isEdit) { %>
+            <button type="submit">Сохранить</button>
+            <% if(book.id) { %>
+                <a href="/books/book/<%= book.id %>"><button type="button">Отменить</button></a>
+            <% } %> 
+        <% } else { %>
+            <a href="/books/book/<%= book.id %>/update"><button type="button">Редактировать</button></a>
+        <% } %> 
+        
+    </div>
+</form>

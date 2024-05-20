@@ -1,0 +1,22 @@
+<% 
+const menudata = [
+    { 
+        id:1,
+        name: 'Список книг',
+        link: '/books'
+    },
+    { 
+        id:2,
+        name: 'Добавить книгу',
+        link: '/books/create'
+    },
+    ];
+%>
+
+<nav>
+    <ul>
+        <% menudata.map((menuitem) => { %>
+            <li><a href="<%= menuitem.link %>" class="<%= menuitem.id == menuitemid ? 'active' : '' %>"><%= menuitem.name %></a></li>    
+        <% }) %>
+    </ul>
+</nav>

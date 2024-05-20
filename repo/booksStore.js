@@ -1,6 +1,6 @@
 import Book from "../models/book.js";
 
-export default class BooksStore {
+class BooksStore {
     books = new Map();
     filesStore = new Map();
 
@@ -64,3 +64,7 @@ export default class BooksStore {
         }
     }
 }
+
+const bookStore = new BooksStore();
+
+export default bookStore;

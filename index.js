@@ -1,8 +1,14 @@
 import express from 'express'
-import api from './api/api.js';
 import config from './config.js';
+import books from './controllers/books.js';
 
 const app = express();
-app.use('/api', api);
+app.set("view engine", "ejs");
+
+app.use('/books', books);
+
+app.use((req, res) => {
+    res.status(404).render('error', { message: '404. Страница не найдена'});
+})
 
 app.listen(config.PORT);

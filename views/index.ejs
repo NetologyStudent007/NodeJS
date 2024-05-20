@@ -1,0 +1,27 @@
+<%- include('./layout/header', { title: 'Список книг' }) %>
+<%- include('./layout/menu', { menuitemid: 1 }) %>
+<% if(books.length) { %>
+
+    <table>
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Название книги</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+            <% books.map((book, idx) => {  %>
+                <tr>
+                    <td><%= idx +1 %></td>
+                    <td class="title"><a href="/books/book/<%= book.id %>"><%= book.title %></a></td>
+                    <td></td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+<% } else { %>   
+    <div>Записей пока нет</div>
+<% } %>    
+
+<%- include('./layout/footer') %>
