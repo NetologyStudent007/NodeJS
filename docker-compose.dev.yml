@@ -1,0 +1,36 @@
+services:
+  storage: 
+    image: redis
+    volumes:
+      - ./data:/data
+  counter: 
+    image: node
+    volumes:
+      - ./counter:/app
+    working_dir: /app
+    ports:
+      - 3002:3002
+    environment:
+      - PORT=3002
+      - REDIS_URL=redis://storage
+    depends_on:
+      - storage
+    entrypoint: npm run start
+  bookstore: 
+    image: node
+    volumes:
+      - ./bookstore:/app
+    working_dir: /app
+    ports:
+      - 3001:3001
+    environment:
+      - PORT=3001
+      - COUNTER_URL=http://counter:3002
+    depends_on:
+      - counter
+    entrypoint: npm run start
+    
+    
+
+
+  

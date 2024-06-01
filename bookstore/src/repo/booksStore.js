@@ -4,24 +4,14 @@ class BooksStore {
     books = new Map();
     filesStore = new Map();
 
-    addBook = ({
-        title,
-        description,
-        authors,
-        favorite,
-        bookFile
-    }) => {
-
-        const newBook = new Book(title,
-            description,
-            authors,
-            favorite);
+    addBook = ({ title, description, authors, favorite, bookFile }) => {
+        const newBook = new Book(title, description, authors, favorite);
 
         this.books.set(newBook.id, newBook);
         this.filesStore.set(newBook.id, bookFile);
 
         return newBook;
-    }
+    };
 
     getBooks = () => [...this.books.values()];
 
@@ -37,16 +27,9 @@ class BooksStore {
             return book;
         }
         return undefined;
-    }
+    };
 
-    updateBook = ({
-        id,
-        title,
-        description,
-        authors,
-        favorite,
-        bookFile
-    }) => {
+    updateBook = ({ id, title, description, authors, favorite, bookFile }) => {
         const book = this.books.get(id);
         if (!book) {
             return undefined;
@@ -56,13 +39,13 @@ class BooksStore {
                 title,
                 description,
                 authors,
-                favorite
-            }
+                favorite,
+            };
             this.books.set(id, updated);
             this.filesStore.set(id, bookFile);
             return updated;
         }
-    }
+    };
 }
 
 const bookStore = new BooksStore();

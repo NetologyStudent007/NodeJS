@@ -1,0 +1,28 @@
+services:
+  storage: 
+    image: redis
+    volumes:
+      - ./data:/data
+  counter: 
+    image: dockeruser0007/counter:1.0
+    ports:
+      - 3002:3002
+    environment:
+      - PORT=3002
+      - REDIS_URL=redis://storage
+    depends_on:
+      - storage
+  bookstore: 
+    image: dockeruser0007/bookstore:1.0
+    ports:
+      - 3001:3001
+    environment:
+      - PORT=3001
+      - COUNTER_URL=http://counter:3002
+    depends_on:
+      - counter
+    
+    
+
+
+  
