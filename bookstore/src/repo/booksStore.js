@@ -1,50 +1,76 @@
 import Book from "../models/book.js";
+import BookFile from "../models/bookFile.js";
 
 class BooksStore {
-    books = new Map();
-    filesStore = new Map();
+    addBookAsync = async ({
+        title,
+        description,
+        authors,
+        favorite,
+        bookFile,
+    }) => {
+        //тут должна была бы быть транзакция но я пока с ней не разобрался
 
-    addBook = ({ title, description, authors, favorite, bookFile }) => {
-        const newBook = new Book(title, description, authors, favorite);
+        const newBook = await new Book({
+            title,
+            description,
+            authors,
+            favorite,
+        }).save();
 
-        this.books.set(newBook.id, newBook);
-        this.filesStore.set(newBook.id, bookFile);
+        await new BookFile({
+            _id: newBook._id,
+            data: bookFile.data.toString("base64"),
+            mimeType: bookFile.mimeType,
+            fileName: bookFile.fileName,
+        }).save();
 
         return newBook;
     };
 
-    getBooks = () => [...this.books.values()];
+    getBooksAsync = async () => await Book.find();
 
-    getBook = (id) => this.books.get(id);
+    getBookAsync = async (id) => await Book.findById(id);
 
-    getBookFile = (id) => this.filesStore.get(id);
+    getBookFileAsync = async (id) => await BookFile.findById(id);
 
-    deleteBook = (id) => {
-        const book = this.books.get(id);
+    deleteBookAsync = async (id) => {
+        const book = await Book.findById(id);
+
         if (book) {
-            this.filesStore.delete(book.id);
-            this.books.delete(book.id);
-            return book;
+            await Book.deleteOne({ _id: id });
+            await BookFile.deleteOne({ _id: id });
         }
-        return undefined;
+
+        return book;
     };
 
-    updateBook = ({ id, title, description, authors, favorite, bookFile }) => {
-        const book = this.books.get(id);
-        if (!book) {
-            return undefined;
-        } else {
-            const updated = {
-                id,
-                title,
-                description,
-                authors,
-                favorite,
-            };
-            this.books.set(id, updated);
-            this.filesStore.set(id, bookFile);
-            return updated;
+    updateBookAsync = async ({
+        id,
+        title,
+        description,
+        authors,
+        favorite,
+        bookFile,
+    }) => {
+        let book = await Book.findById(id);
+        if (book) {
+            await Book.updateOne(
+                { _id: id },
+                { title, description, favorite, authors }
+            );
+
+            await BookFile.updateOne(
+                { _id: id },
+                {
+                    data: bookFile.data.toString("base64"),
+                    mimeType: bookFile.mimeType,
+                    fileName: bookFile.fileName,
+                }
+            );
+            return true;
         }
+        return false;
     };
 }
 

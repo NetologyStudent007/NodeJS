@@ -1,7 +1,4 @@
 <%- include('./layout/header', { title: book.title }) %>
 <%- include('./layout/menu', { menuitemid : 0 }) %>
-<% if(viewCount != -1) { %>
-<div class="book-view-counter">Просмотров книги: <%= viewCount %></div>
-<% } %>
 <%- include('./common/form', { book, error: undefined, isEdit: false }) %>
 <%- include('./layout/footer') %>

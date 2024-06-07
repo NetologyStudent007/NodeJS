@@ -15,7 +15,7 @@
                 <tr>
                     <td><%= idx +1 %></td>
                     <td class="title"><a href="/books/book/<%= book.id %>"><%= book.title %></a></td>
-                    <td></td>
+                    <td><a href="/books/book/<%= book.id %>/delete">Удалить</a></td>
                 </tr>
             <% }) %>
         </tbody>

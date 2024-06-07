@@ -24,7 +24,7 @@
             <div>
                 <label for="file">Файл</label>
                 <input type="file" name="file" id="file" onchange="((el) => document.getElementById('filename').value = el.value.split('\\').pop())(this)">
-                <input type="text" id="filename" placeholder="Выбрать файл" onclick="(() => document.getElementById('file').click())()"/>
+                <input type="text" id="filename" readonly placeholder="Выбрать файл" onclick="(() => document.getElementById('file').click())()"/>
             </div>
         <% } else { %>
             <a target="_blank" href="/books/book/<%= book.id %>/download">Скачать</a>

@@ -1,20 +1,18 @@
-import { v4 as uuid } from 'uuid';
+import { Schema, model } from "mongoose";
 
-export default class Book {
+const bookSchema = new Schema({
+    title: {
+        type: String,
+        required: true,
+    },
+    authors: {
+        type: String,
+        required: true,
+    },
+    description: String,
+    favorite: String,
+});
 
-   // модель хранения пришлось чуть изменить
-   // сover убрал пока
+const Book = model("Book", bookSchema);
 
-    constructor(
-        title,
-        description,
-        authors,
-        favorite
-    ) {
-        this.id = uuid();
-        this.title = title;
-        this.description = description;
-        this.authors = authors;
-        this.favorite = favorite;
-    }
-}
+export default Book;

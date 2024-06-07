@@ -1,49 +1,39 @@
 import express from "express";
 import multer from "multer";
-import config from "../config.js";
 import booksStore from "../repo/booksStore.js";
+import ah from "express-async-handler";
 const upload = multer({ storage: multer.memoryStorage() });
 
 const router = express.Router();
 router.use(express.urlencoded({ extended: true }));
 
-router.get("/", (req, res) => {
-    const books = booksStore.getBooks();
+router.get(
+    "/",
+    ah(async (req, res) => {
+        const books = await booksStore.getBooksAsync();
 
-    res.render("index", {
-        books,
-    });
-});
+        res.render("index", {
+            books,
+        });
+    })
+);
 
-router.get("/book/:id", async ({ params: { id } }, res) => {
-    const book = booksStore.getBook(id);
+router.get(
+    "/book/:id",
+    ah(async ({ params: { id } }, res) => {
+        const book = await booksStore.getBookAsync(id);
 
-    if (!book) {
-        return res
-            .status(404)
-            .render("error", { message: "404. Книга не найдена" });
-    }
+        if (!book) {
+            return res
+                .status(404)
+                .render("error", { message: "404. Книга не найдена" });
+        }
 
-    let viewCount = -1;
-
-    try {
-        const viewCountInfo = await (
-            await fetch(`${config.COUNTER_URL}/${id}/incr`, {
-                method: "POST",
-            })
-        ).json();
-        viewCount = viewCountInfo.counter;
-    } catch {
-        console.error(
-            `Не удалось получить значение счетчика просмотров книги c id: ${id}`
-        );
-    }
-
-    res.render("view", {
-        book,
-        viewCount,
-    });
-});
+        res.render("view", {
+            book,
+        });
+    })
+);
 
 router.get("/create", (req, res) => {
     res.render("create", {
@@ -52,18 +42,23 @@ router.get("/create", (req, res) => {
     });
 });
 
-router.get("/book/:id/update", ({ params: { id } }, res) => {
-    const book = booksStore.getBook(id);
+router.get(
+    "/book/:id/update",
+    ah(async ({ params: { id } }, res) => {
+        const book = await booksStore.getBookAsync(id);
 
-    if (!book) {
-        res.status(404).render("error", { message: "404. Книга не найдена" });
-    }
+        if (!book) {
+            res.status(404).render("error", {
+                message: "404. Книга не найдена",
+            });
+        }
 
-    res.render("update", {
-        book,
-        error: undefined,
-    });
-});
+        res.render("update", {
+            book,
+            error: undefined,
+        });
+    })
+);
 
 const getSaveDataValidator = (type) => {
     return ({ body, file }, res, next) => {
@@ -90,8 +85,8 @@ router.post(
     "/book/create",
     upload.single("file"),
     getSaveDataValidator("create"),
-    ({ body, file }, res) => {
-        const book = booksStore.addBook({
+    ah(async ({ body, file }, res) => {
+        const book = await booksStore.addBookAsync({
             ...body,
             bookFile: {
                 mimeType: file.mimetype,
@@ -99,17 +94,16 @@ router.post(
                 data: file.buffer,
             },
         });
-
         res.redirect(`/books/book/${book.id}`);
-    }
+    })
 );
 
 router.post(
     "/book/update",
     upload.single("file"),
     getSaveDataValidator("update"),
-    ({ body, file }, res) => {
-        const updated = booksStore.updateBook({
+    ah(async ({ body, file }, res) => {
+        const isUpdated = await booksStore.updateBookAsync({
             ...body,
             bookFile: {
                 mimeType: file.mimetype,
@@ -118,35 +112,55 @@ router.post(
             },
         });
 
-        if (updated) {
-            res.redirect(`/books/book/${updated.id}`);
+        if (isUpdated) {
+            res.redirect(`/books/book/${body.id}`);
         } else {
             res.status(404).render("error", {
                 message: "404. Книга не найдена",
             });
         }
-    }
+    })
 );
 
-router.get("/book/:id/download", (req, res) => {
-    const { id } = req.params;
+router.get(
+    "/book/:id/download",
+    ah(async (req, res) => {
+        const { id } = req.params;
 
-    const bookFile = booksStore.getBookFile(id);
+        const bookFile = await booksStore.getBookFileAsync(id);
 
-    if (!bookFile) {
-        return res
-            .status(404)
-            .render("error", { message: "404. Книга не найдена" });
-    }
+        if (!bookFile) {
+            return res
+                .status(404)
+                .render("error", { message: "404. Книга не найдена" });
+        }
 
-    const { mimeType, data, fileName } = bookFile;
+        const { mimeType, data, fileName } = bookFile;
+        const buffer = Buffer.from(data, "base64");
 
-    res.writeHead(200, {
-        "Content-Type": mimeType,
-        "Content-Disposition": "attachment;filename=" + fileName,
-        "Content-Length": data.length,
-    });
-    res.end(Buffer.from(data, "binary"));
-});
+        res.writeHead(200, {
+            "Content-Type": mimeType,
+            "Content-Disposition": "attachment;filename=" + fileName,
+            "Content-Length": buffer.length,
+        });
+        res.end(buffer);
+    })
+);
+
+router.get(
+    "/book/:id/delete",
+    ah(async (req, res) => {
+        const { id } = req.params;
+
+        const deleted = await booksStore.deleteBookAsync(id);
+
+        if (!deleted) {
+            return res
+                .status(404)
+                .render("error", { message: "404. Книга не найдена" });
+        }
+        res.redirect("/books");
+    })
+);
 
 export default router;

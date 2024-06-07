@@ -1,21 +1,20 @@
 services:
-  storage: 
-    image: redis
-    volumes:
-      - ./data:/data
-  counter: 
-    image: node
-    volumes:
-      - ./counter:/app
-    working_dir: /app
-    ports:
-      - 3002:3002
+  mongo:
+    image: mongo
+    restart: always
     environment:
-      - PORT=3002
-      - REDIS_URL=redis://storage
-    depends_on:
-      - storage
-    entrypoint: npm run start
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+      ME_CONFIG_BASICAUTH: false
   bookstore: 
     image: node
     volumes:
@@ -25,9 +24,9 @@ services:
       - 3001:3001
     environment:
       - PORT=3001
-      - COUNTER_URL=http://counter:3002
+      - MONGO_CONNECTION_STRING=mongodb://root:example@mongo:27017
     depends_on:
-      - counter
+      - mongo
     entrypoint: npm run start
     
     

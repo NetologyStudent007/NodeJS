@@ -1,26 +1,20 @@
 services:
-  storage: 
-    image: redis
-    volumes:
-      - ./data:/data
-  counter: 
-    build: ./counter
-    ports:
-      - 3002:3002
+  mongo:
+    image: mongo
+    restart: always
     environment:
-      - PORT=3002
-      - REDIS_URL=redis://storage
-    depends_on:
-      - storage
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
   bookstore: 
     build: ./bookstore
+    image: dockeruser0007/bookstore-mongo:1.0
     ports:
       - 3001:3001
     environment:
       - PORT=3001
-      - COUNTER_URL=http://counter:3002
+      - MONGO_CONNECTION_STRING=mongodb://root:example@mongo:27017
     depends_on:
-      - counter
+      - mongo
     
     
 
