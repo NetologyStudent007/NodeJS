@@ -1,0 +1,8 @@
+<div class="user-info">
+    <% if(userInfo) { %>
+        <a href="/user/me"><%= userInfo.name %> <%= userInfo.lastName %></a>
+        <a href="/user/logout">Выйти</a>
+    <% } else { %>
+        <a href="/user/login">Войти</a>
+    <% } %>    
+</div>

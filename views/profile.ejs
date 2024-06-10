@@ -1,0 +1,11 @@
+<%- include('./layout/header', { title: 'Профиль', menuitemid: 0, isShowHeader: true }) %>
+<table class="profile-info">
+    <tr>
+        <td>Имя пользователя:</td><td><%= userInfo.username %></td>
+    </tr>
+    <tr>
+        <td>ФИО:</td><td><%= userInfo.name %> <%= userInfo.lastName %></td>
+    </tr>
+</table>
+<%- include('./layout/footer') %>
+

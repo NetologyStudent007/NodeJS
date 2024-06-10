@@ -1,0 +1,17 @@
+<%- include('./layout/header', { title: 'Войти', isShowHeader: false, menuitemid: 0 }) %>
+    <form class="form" method="post" action="/user/login">
+        <fieldset>
+            <div>
+                <label for="username">Имя пользоваеля</label>
+                <input type="text" name="username" id="username">
+            </div>
+            <div>
+                <label for="password">Пароль</label>
+                <input type="password" name="password" id="password">
+            </div>
+        </fieldset>
+        <div class="form__buttons">
+            <button type="submit">Войти</button>
+        </div>
+    </form>
+<%- include('./layout/footer') %>
