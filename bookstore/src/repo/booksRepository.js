@@ -1,7 +1,7 @@
 import Book from "../models/book.js";
 import BookFile from "../models/bookFile.js";
 
-class BooksStore {
+export class BooksRepository {
     addBookAsync = async ({
         title,
         description,
@@ -73,7 +73,3 @@ class BooksStore {
         return false;
     };
 }
-
-const bookStore = new BooksStore();
-
-export default bookStore;

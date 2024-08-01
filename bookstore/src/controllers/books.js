@@ -1,7 +1,8 @@
 import express from "express";
 import multer from "multer";
-import booksStore from "../repo/booksStore.js";
 import ah from "express-async-handler";
+import { BooksRepository } from "../repo/booksRepository.js";
+import { container } from "../iocContainer.js";
 const upload = multer({ storage: multer.memoryStorage() });
 
 const router = express.Router();
@@ -10,8 +11,9 @@ router.use(express.urlencoded({ extended: true }));
 router.get(
     "/",
     ah(async (req, res) => {
-        const books = await booksStore.getBooksAsync();
+        const repo = container.get(BooksRepository);
 
+        const books = await repo.getBooksAsync();
         res.render("index", {
             books,
         });
@@ -21,7 +23,9 @@ router.get(
 router.get(
     "/book/:id",
     ah(async ({ params: { id } }, res) => {
-        const book = await booksStore.getBookAsync(id);
+        const repo = container.get(BooksRepository);
+
+        const book = await repo.getBookAsync(id);
 
         if (!book) {
             return res
@@ -45,7 +49,9 @@ router.get("/create", (req, res) => {
 router.get(
     "/book/:id/update",
     ah(async ({ params: { id } }, res) => {
-        const book = await booksStore.getBookAsync(id);
+        const repo = container.get(BooksRepository);
+
+        const book = await repo.getBookAsync(id);
 
         if (!book) {
             res.status(404).render("error", {
@@ -86,7 +92,9 @@ router.post(
     upload.single("file"),
     getSaveDataValidator("create"),
     ah(async ({ body, file }, res) => {
-        const book = await booksStore.addBookAsync({
+        const repo = container.get(BooksRepository);
+
+        const book = await repo.addBookAsync({
             ...body,
             bookFile: {
                 mimeType: file.mimetype,
@@ -103,7 +111,9 @@ router.post(
     upload.single("file"),
     getSaveDataValidator("update"),
     ah(async ({ body, file }, res) => {
-        const isUpdated = await booksStore.updateBookAsync({
+        const repo = container.get(BooksRepository);
+
+        const isUpdated = await repo.updateBookAsync({
             ...body,
             bookFile: {
                 mimeType: file.mimetype,
@@ -127,7 +137,9 @@ router.get(
     ah(async (req, res) => {
         const { id } = req.params;
 
-        const bookFile = await booksStore.getBookFileAsync(id);
+        const repo = container.get(BooksRepository);
+
+        const bookFile = await repo.getBookFileAsync(id);
 
         if (!bookFile) {
             return res
@@ -152,7 +164,9 @@ router.get(
     ah(async (req, res) => {
         const { id } = req.params;
 
-        const deleted = await booksStore.deleteBookAsync(id);
+        const repo = container.get(BooksRepository);
+
+        const deleted = await repo.deleteBookAsync(id);
 
         if (!deleted) {
             return res

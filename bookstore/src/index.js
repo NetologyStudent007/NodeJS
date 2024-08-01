@@ -17,6 +17,7 @@ app.use((req, res) => {
 });
 
 app.use((error, req, res, next) => {
+    console.log(error);
     res.status(error.status || 500).render("error", {
         message: "500. Внутренняя ошибка сервера.",
     });
