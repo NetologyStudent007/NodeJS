@@ -6,6 +6,8 @@ ENV NODE_ENV=production
 
 COPY package*.json /app/
 RUN npm i
-COPY src/ /app/src
+RUN npx tsc
+COPY dist/ /app/dist
+COPY src/views/ /app/dist/views
 
-CMD [ "node", "src/index.js" ]
+CMD [ "node", "dist/index.js" ]

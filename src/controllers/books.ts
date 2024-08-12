@@ -1,4 +1,4 @@
-import express from "express";
+import express, { RequestHandler } from "express";
 import multer from "multer";
 import ah from "express-async-handler";
 import { BooksRepository } from "../repo/booksRepository.js";
@@ -10,7 +10,7 @@ router.use(express.urlencoded({ extended: true }));
 
 router.get(
     "/",
-    ah(async (req, res) => {
+    ah(async (_req, res) => {
         const repo = container.get(BooksRepository);
 
         const books = await repo.getBooksAsync();
@@ -39,7 +39,7 @@ router.get(
     })
 );
 
-router.get("/create", (req, res) => {
+router.get("/create", (_req, res) => {
     res.render("create", {
         book: {},
         error: undefined,
@@ -66,7 +66,7 @@ router.get(
     })
 );
 
-const getSaveDataValidator = (type) => {
+const getSaveDataValidator = (type: "create" | "update"): RequestHandler => {
     return ({ body, file }, res, next) => {
         const { title, authors } = body;
 
@@ -91,7 +91,9 @@ router.post(
     "/book/create",
     upload.single("file"),
     getSaveDataValidator("create"),
-    ah(async ({ body, file }, res) => {
+    ah(async ({ body, file }, res, next) => {
+        if (!file) return next();
+
         const repo = container.get(BooksRepository);
 
         const book = await repo.addBookAsync({
@@ -102,7 +104,7 @@ router.post(
                 data: file.buffer,
             },
         });
-        res.redirect(`/books/book/${book.id}`);
+        res.redirect(`/books/book/${book._id}`);
     })
 );
 
@@ -110,7 +112,9 @@ router.post(
     "/book/update",
     upload.single("file"),
     getSaveDataValidator("update"),
-    ah(async ({ body, file }, res) => {
+    ah(async ({ body, file }, res, next) => {
+        if (!file) return next();
+
         const repo = container.get(BooksRepository);
 
         const isUpdated = await repo.updateBookAsync({

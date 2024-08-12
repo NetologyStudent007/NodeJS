@@ -1,5 +1,4 @@
-bookstore/node_modules
-counter/node_modules
-data
+node_modules
+dist
 logs
 .env

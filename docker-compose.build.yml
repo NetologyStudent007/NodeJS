@@ -6,7 +6,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
   bookstore: 
-    build: ./bookstore
+    build: .
     image: dockeruser0007/bookstore-mongo:1.0
     ports:
       - 3001:3001

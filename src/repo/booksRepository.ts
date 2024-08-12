@@ -1,6 +1,9 @@
-import Book from "../models/book.js";
-import BookFile from "../models/bookFile.js";
+import "reflect-metadata";
+import { injectable } from "inversify";
+import { IBook, IBookDto, Book } from "../models/book.js";
+import { IBookFileDto, BookFile } from "../models/bookFile.js";
 
+@injectable()
 export class BooksRepository {
     addBookAsync = async ({
         title,
@@ -8,7 +11,7 @@ export class BooksRepository {
         authors,
         favorite,
         bookFile,
-    }) => {
+    }: Omit<IBook, "_id">): Promise<IBookDto> => {
         //тут должна была бы быть транзакция но я пока с ней не разобрался
 
         const newBook = await new Book({
@@ -30,11 +33,12 @@ export class BooksRepository {
 
     getBooksAsync = async () => await Book.find();
 
-    getBookAsync = async (id) => await Book.findById(id);
+    getBookAsync = async (id: IBookDto["_id"]) => await Book.findById(id);
 
-    getBookFileAsync = async (id) => await BookFile.findById(id);
+    getBookFileAsync = async (id: IBookFileDto["_id"]) =>
+        await BookFile.findById(id);
 
-    deleteBookAsync = async (id) => {
+    deleteBookAsync = async (id: IBookDto["_id"]) => {
         const book = await Book.findById(id);
 
         if (book) {
@@ -46,22 +50,22 @@ export class BooksRepository {
     };
 
     updateBookAsync = async ({
-        id,
+        _id,
         title,
         description,
         authors,
         favorite,
         bookFile,
-    }) => {
-        let book = await Book.findById(id);
+    }: IBook): Promise<boolean> => {
+        let book = await Book.findById(_id);
         if (book) {
             await Book.updateOne(
-                { _id: id },
+                { _id },
                 { title, description, favorite, authors }
             );
 
             await BookFile.updateOne(
-                { _id: id },
+                { _id },
                 {
                     data: bookFile.data.toString("base64"),
                     mimeType: bookFile.mimeType,
