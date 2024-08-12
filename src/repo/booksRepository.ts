@@ -31,7 +31,7 @@ export class BooksRepository {
         return newBook.toObject();
     };
 
-    getBooksAsync = async () =>
+    getBooksAsync = async (): Promise<IBookDto[]> =>
         (await Book.find()).map((book) => book.toObject());
 
     getBookAsync = async (id: IBookDto["_id"]): Promise<IBookDto | undefined> =>
