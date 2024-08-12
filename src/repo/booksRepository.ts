@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import { injectable } from "inversify";
-import { IBook, IBookDto, Book } from "../models/book.js";
-import { IBookFileDto, BookFile } from "../models/bookFile.js";
+import { IBook, IBookDto, Book } from "../models/book";
+import { IBookFileDto, BookFile } from "../models/bookFile";
 
 @injectable()
 export class BooksRepository {
