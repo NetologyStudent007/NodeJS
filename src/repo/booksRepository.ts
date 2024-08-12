@@ -28,17 +28,23 @@ export class BooksRepository {
             fileName: bookFile.fileName,
         }).save();
 
-        return newBook;
+        return newBook.toObject();
     };
 
-    getBooksAsync = async () => await Book.find();
+    getBooksAsync = async () =>
+        (await Book.find()).map((book) => book.toObject());
 
-    getBookAsync = async (id: IBookDto["_id"]) => await Book.findById(id);
+    getBookAsync = async (id: IBookDto["_id"]): Promise<IBookDto | undefined> =>
+        (await Book.findById(id))?.toObject();
 
-    getBookFileAsync = async (id: IBookFileDto["_id"]) =>
-        await BookFile.findById(id);
+    getBookFileAsync = async (
+        id: IBookFileDto["_id"]
+    ): Promise<IBookFileDto | undefined> =>
+        (await BookFile.findById(id))?.toObject();
 
-    deleteBookAsync = async (id: IBookDto["_id"]) => {
+    deleteBookAsync = async (
+        id: IBookDto["_id"]
+    ): Promise<IBookDto | undefined> => {
         const book = await Book.findById(id);
 
         if (book) {
@@ -46,7 +52,7 @@ export class BooksRepository {
             await BookFile.deleteOne({ _id: id });
         }
 
-        return book;
+        return book?.toObject();
     };
 
     updateBookAsync = async ({
