@@ -22,12 +22,18 @@ export class BooksController {
   }
 
   @Put('/:id')
-  update(@Param('id') id: IBookDto['id'], @Body() book: IBook): IBookDto | undefined {
+  update(
+    @Param('id') id: IBookDto['id'],
+    @Body() book: IBook,
+  ): IBookDto | undefined {
     return this._booksService.update(id, book);
   }
 
   @Patch('/:id')
-  patch(@Param('id') id: IBookDto['id'], @Body() book: Partial<IBook>): IBookDto | undefined {
+  patch(
+    @Param('id') id: IBookDto['id'],
+    @Body() book: Partial<IBook>,
+  ): IBookDto | undefined {
     return this._booksService.patch(id, book);
   }
 }

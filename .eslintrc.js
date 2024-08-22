@@ -22,6 +22,5 @@ module.exports = {
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
     'linebreak-style': 0,
-    'max-len': ['error', { code: 200 }],
   },
 };
