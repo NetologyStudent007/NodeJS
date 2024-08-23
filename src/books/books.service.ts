@@ -1,63 +1,49 @@
 import { Injectable } from '@nestjs/common';
-import { IBook, IBookDto } from './books.interfaces';
-import { v4 as uuidv4 } from 'uuid';
+import { ICreateBookDto, IUpdateBookDto } from './interfaces/book';
+import { InjectModel } from '@nestjs/mongoose';
+import { Book, BookDocument } from './schemas/book';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class BooksService {
-  private store = new Map<IBookDto['id'], IBookDto>();
+  constructor(@InjectModel(Book.name) private _bookModel: Model<Book>) {}
 
-  constructor() {
-    const id = uuidv4();
-    this.store.set(id, { id, title: 'Первая книга', author: 'Автор' });
-  }
+  findAll = (): Promise<Book[]> => this._bookModel.find().exec();
 
-  findAll = (): IBookDto[] => [...this.store.values()];
+  getById = (id: Book['id']): Promise<Book | undefined> =>
+    this._bookModel.findById(id);
 
-  getById = (id: IBookDto['id']): IBookDto | undefined => this.store.get(id);
+  //тут с типизацией какая-то непонятность Model<Book> ни какой помощи в типизации не дает. Везде Promise<never> после exec
 
-  update = (id: IBookDto['id'], book: IBook): IBookDto | undefined => {
-    if (!this.store.has(id)) {
-      return undefined;
-    }
+  update = (id: Book['id'], book: IUpdateBookDto): Promise<Book | undefined> =>
+    this._bookModel.findByIdAndUpdate(id, book, { new: true }).exec();
 
-    const dto = {
-      id,
-      ...book,
-    };
-
-    this.store.set(id, dto);
-
-    return dto;
-  };
-
-  patch = (id: IBookDto['id'], book: Partial<IBook>): IBookDto | undefined => {
-    const existing = this.store.get(id);
+  patch = async (
+    id: Book['id'],
+    book: Partial<IUpdateBookDto>,
+  ): Promise<Book | undefined> => {
+    const existing: BookDocument = await this._bookModel.findById(id);
     if (!existing) {
       return undefined;
     }
 
-    const dto = {
-      id,
-      ...existing,
-      ...book,
-    };
-
-    this.store.set(id, dto);
-
-    return dto;
+    return this._bookModel
+      .findByIdAndUpdate(
+        id,
+        {
+          ...existing.toObject(),
+          ...book,
+        },
+        { new: true },
+      )
+      .exec();
   };
 
-  create = (book: IBook): IBookDto => {
-    const id = uuidv4();
-    const dto = {
-      id,
-      ...book,
-    };
+  create = (book: ICreateBookDto): Promise<Book> =>
+    this._bookModel.create(book);
 
-    this.store.set(id, dto);
-
-    return dto;
+  delete = async (id: Book['id']): Promise<boolean> => {
+    const book: Book = await this._bookModel.findByIdAndDelete(id);
+    return book ? true : false;
   };
-
-  delete = (id: IBookDto['id']): boolean => this.store.delete(id);
 }
